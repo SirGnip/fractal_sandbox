@@ -1,1 +1,1 @@
-Simple experiments with fractals
+Simple experiments with fractals, specifically the Mandelbrot Set.

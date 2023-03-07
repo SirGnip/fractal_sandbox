@@ -2,9 +2,11 @@ import arcade
 
 ESCAPE_THRESHOLD = 10
 MAX_ITERATIONS = 50
-X_DIMENSION, Y_DIMENSION = 500, 500
-STRIDE = 1
-DIVISOR = 200
+X_DIMENSION, Y_DIMENSION = 1000, 600
+DRAW_STEP = 2
+# the position in the Argand plane (complex number plane) that is drawn at the bottom-left of the window
+X_POS, Y_POS = -2.25, -0.9
+PIXEL_SIZE = 0.003  # the dimensions of each screen pixel in the Argand plane
 
 
 def funct(z, c):
@@ -29,12 +31,12 @@ def is_bound(items):
 
 def make_point_list():
     point_list = []
-    for x_pixel in range(0, X_DIMENSION, STRIDE):
+    for x_pixel in range(0, X_DIMENSION, DRAW_STEP):
         if x_pixel % 50 == 0:
             print(x_pixel)
-        for y_pixel in range(0 ,Y_DIMENSION, STRIDE):
-            real = (x_pixel / DIVISOR) - 1.75
-            img = (y_pixel / DIVISOR) - 1.25
+        for y_pixel in range(0, Y_DIMENSION, DRAW_STEP):
+            real = X_POS + (x_pixel * PIXEL_SIZE)
+            img = Y_POS + (y_pixel * PIXEL_SIZE)
             c = complex(real, img)
             s = iterate(c, MAX_ITERATIONS)
             if is_bound(s):

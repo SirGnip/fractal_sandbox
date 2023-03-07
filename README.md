@@ -1,1 +1,1 @@
-Rough experiment with fractals
+Simple experiments with fractals

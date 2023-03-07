@@ -3,6 +3,8 @@ import arcade
 ESCAPE_THRESHOLD = 10
 MAX_ITERATIONS = 50
 X_DIMENSION, Y_DIMENSION = 500, 500
+STRIDE = 1
+DIVISOR = 200
 
 
 def funct(z, c):
@@ -25,14 +27,7 @@ def is_bound(items):
         return False
 
 
-if __name__ == '__main__':
-    arcade.open_window(X_DIMENSION, Y_DIMENSION, "Fractal Experiments")
-    arcade.set_background_color(arcade.color.BLACK)
-    arcade.start_render()
-
-    STRIDE = 1
-    DIVISOR = 200
-
+def make_point_list():
     point_list = []
     for x_pixel in range(0, X_DIMENSION, STRIDE):
         if x_pixel % 50 == 0:
@@ -44,8 +39,16 @@ if __name__ == '__main__':
             s = iterate(c, MAX_ITERATIONS)
             if is_bound(s):
                 point_list.append((x_pixel, y_pixel))
+    return point_list
 
-    arcade.draw_points(point_list, arcade.color.WHITE, 1)
+
+if __name__ == '__main__':
+    points = make_point_list()
+    print('point list done')
+
+    arcade.open_window(X_DIMENSION, Y_DIMENSION, "Fractal Experiments")
+    arcade.set_background_color(arcade.color.BLACK)
+    arcade.start_render()
+    arcade.draw_points(points, arcade.color.WHITE, 1)
     arcade.finish_render()
-    print('done')
     arcade.run()

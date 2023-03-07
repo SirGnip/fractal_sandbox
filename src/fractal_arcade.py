@@ -30,9 +30,10 @@ if __name__ == '__main__':
     arcade.set_background_color(arcade.color.BLACK)
     arcade.start_render()
 
-    STRIDE = 3
+    STRIDE = 1
     DIVISOR = 200
 
+    point_list = []
     for x_pixel in range(0, X_DIMENSION, STRIDE):
         if x_pixel % 50 == 0:
             print(x_pixel)
@@ -42,8 +43,9 @@ if __name__ == '__main__':
             c = complex(real, img)
             s = iterate(c, MAX_ITERATIONS)
             if is_bound(s):
-                arcade.draw_point(x_pixel, y_pixel, arcade.color.WHITE, 1)
+                point_list.append((x_pixel, y_pixel))
 
+    arcade.draw_points(point_list, arcade.color.WHITE, 1)
     arcade.finish_render()
     print('done')
     arcade.run()

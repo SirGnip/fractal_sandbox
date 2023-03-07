@@ -19,9 +19,9 @@ def is_bound(items):
 
 
 t = []
-for img in range(-15, 15):
-    row = '' 
-    for r in range(-15, 15):
+for img in [i/2 for i in range(-15, 15)]:
+    row = ''
+    for r in [i/2 for i in range(-15, 15)]:
         c = complex(r, img)
         s = iterate(c, 10)
         b = is_bound(s)

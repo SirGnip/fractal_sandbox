@@ -1,3 +1,4 @@
+import time
 import arcade
 import utils
 
@@ -66,6 +67,9 @@ class MyFractal(arcade.Window):
     def on_draw(self):
         self.clear()
         arcade.draw_points(self.point_list, arcade.color.WHITE, 1)
+
+    def on_update(self, delta_time):
+        time.sleep(0.001)
 
     def on_key_press(self, key, key_modifiers):
         if key == arcade.key.H:

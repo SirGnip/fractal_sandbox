@@ -5,7 +5,7 @@ MAX_ITERATIONS = 50
 X_DIMENSION, Y_DIMENSION = 1000, 600
 DRAW_STEP = 2
 # the position in the Argand plane (complex number plane) that is drawn at the bottom-left of the window
-X_POS, Y_POS = -2.25, -0.9
+X_START, Y_START = -2.25, -0.9
 PIXEL_SIZE = 0.003  # the dimensions of each screen pixel in the Argand plane
 
 
@@ -29,14 +29,14 @@ def is_bound(items):
         return False
 
 
-def make_point_list():
+def make_point_list(x_pos, y_pos, pixel_size):
     point_list = []
     for x_pixel in range(0, X_DIMENSION, DRAW_STEP):
         if x_pixel % 50 == 0:
             print(x_pixel)
         for y_pixel in range(0, Y_DIMENSION, DRAW_STEP):
-            real = X_POS + (x_pixel * PIXEL_SIZE)
-            img = Y_POS + (y_pixel * PIXEL_SIZE)
+            real = x_pos + (x_pixel * pixel_size)
+            img = y_pos + (y_pixel * pixel_size)
             c = complex(real, img)
             s = iterate(c, MAX_ITERATIONS)
             if is_bound(s):
@@ -44,13 +44,48 @@ def make_point_list():
     return point_list
 
 
-if __name__ == '__main__':
-    points = make_point_list()
-    print('point list done')
+class MyFractal(arcade.Window):
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
+        self.x_pos, self.y_pos = X_START, Y_START
+        self.pixel_size = PIXEL_SIZE
 
-    arcade.open_window(X_DIMENSION, Y_DIMENSION, "Fractal Experiments")
-    arcade.set_background_color(arcade.color.BLACK)
-    arcade.start_render()
-    arcade.draw_points(points, arcade.color.WHITE, 1)
-    arcade.finish_render()
+        arcade.set_background_color(arcade.color.BLACK)
+        self.point_list = []
+        self.recalc()
+
+    def recalc(self):
+        self.point_list = make_point_list(self.x_pos, self.y_pos, self.pixel_size)
+
+    def on_draw(self):
+        self.clear()
+        arcade.draw_points(self.point_list, arcade.color.WHITE, 1)
+
+    def on_key_press(self, key, key_modifiers):
+        print('key', key)
+        if key == arcade.key.H:
+            self.x_pos -= self.pixel_size * 10
+            self.recalc()
+        elif key == arcade.key.L:
+            self.x_pos += self.pixel_size * 10
+            self.recalc()
+        elif key == arcade.key.J:
+            self.y_pos -= self.pixel_size * 10
+            self.recalc()
+        elif key == arcade.key.K:
+            self.y_pos += self.pixel_size * 10
+            self.recalc()
+        elif key in (arcade.key.Q, arcade.key.ESCAPE):
+            self.close()
+
+    def on_mouse_press(self, x, y, button, key_modifiers):
+        print('mouse', x, y, button)
+
+
+def main():
+    app = MyFractal(X_DIMENSION, Y_DIMENSION, "Mandelbrot Set experimentation")
     arcade.run()
+
+
+if __name__ == "__main__":
+    main()

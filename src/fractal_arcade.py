@@ -3,10 +3,12 @@ import arcade
 ESCAPE_THRESHOLD = 10
 MAX_ITERATIONS = 50
 X_DIMENSION, Y_DIMENSION = 1000, 600
-DRAW_STEP = 2
+DRAW_STEP = 10
 # the position in the Argand plane (complex number plane) that is drawn at the bottom-left of the window
 X_START, Y_START = -2.25, -0.9
-PIXEL_SIZE = 0.003  # the dimensions of each screen pixel in the Argand plane
+PIXEL_SIZE_START = 0.003  # the dimensions of each screen pixel in the Argand plane
+NUM_PIXELS_TO_MOVE = 20
+ZOOM_PERCENT = .1
 
 
 def funct(z, c):
@@ -48,7 +50,7 @@ class MyFractal(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         self.x_pos, self.y_pos = X_START, Y_START
-        self.pixel_size = PIXEL_SIZE
+        self.pixel_size = PIXEL_SIZE_START
 
         arcade.set_background_color(arcade.color.BLACK)
         self.point_list = []
@@ -56,6 +58,7 @@ class MyFractal(arcade.Window):
 
     def recalc(self):
         self.point_list = make_point_list(self.x_pos, self.y_pos, self.pixel_size)
+        print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f}")
 
     def on_draw(self):
         self.clear()
@@ -64,16 +67,22 @@ class MyFractal(arcade.Window):
     def on_key_press(self, key, key_modifiers):
         print('key', key)
         if key == arcade.key.H:
-            self.x_pos -= self.pixel_size * 10
+            self.x_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
         elif key == arcade.key.L:
-            self.x_pos += self.pixel_size * 10
+            self.x_pos += self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
         elif key == arcade.key.J:
-            self.y_pos -= self.pixel_size * 10
+            self.y_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
         elif key == arcade.key.K:
-            self.y_pos += self.pixel_size * 10
+            self.y_pos += self.pixel_size * NUM_PIXELS_TO_MOVE
+            self.recalc()
+        elif key == arcade.key.D:
+            self.pixel_size *= 1.0 - ZOOM_PERCENT
+            self.recalc()
+        elif key == arcade.key.F:
+            self.pixel_size *= 1.0 + ZOOM_PERCENT
             self.recalc()
         elif key in (arcade.key.Q, arcade.key.ESCAPE):
             self.close()

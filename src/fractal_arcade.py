@@ -1,9 +1,10 @@
 import arcade
+import utils
 
 ESCAPE_THRESHOLD = 10
 MAX_ITERATIONS = 50
 X_DIMENSION, Y_DIMENSION = 1000, 600
-DRAW_STEP = 10
+DRAW_STEP = 2
 # the position in the Argand plane (complex number plane) that is drawn at the bottom-left of the window
 X_START, Y_START = -2.25, -0.9
 PIXEL_SIZE_START = 0.003  # the dimensions of each screen pixel in the Argand plane
@@ -57,15 +58,15 @@ class MyFractal(arcade.Window):
         self.recalc()
 
     def recalc(self):
-        self.point_list = make_point_list(self.x_pos, self.y_pos, self.pixel_size)
-        print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f}")
+        with utils.SimpleTimer() as timer:
+            self.point_list = make_point_list(self.x_pos, self.y_pos, self.pixel_size)
+        print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f} elapsed={timer.elapsed:.1f}")
 
     def on_draw(self):
         self.clear()
         arcade.draw_points(self.point_list, arcade.color.WHITE, 1)
 
     def on_key_press(self, key, key_modifiers):
-        print('key', key)
         if key == arcade.key.H:
             self.x_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()

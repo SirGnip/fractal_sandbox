@@ -19,6 +19,8 @@ def iterate(c, count):
     for i in range(count):
         z = z * z + c
         items.append(z)
+        if abs(z) > ESCAPE_THRESHOLD:
+            break
     return items
 
 

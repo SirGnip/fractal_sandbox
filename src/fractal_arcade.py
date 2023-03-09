@@ -3,9 +3,9 @@ import arcade
 import utils
 
 ESCAPE_THRESHOLD = 10
-MAX_ITERATIONS = 50
+MAX_ITERATIONS = 200
 X_DIMENSION, Y_DIMENSION = 1000, 600
-DRAW_STEP_START = 2
+DRAW_STEP_START = 10
 # the position in the Argand plane (complex number plane) that is drawn at the bottom-left of the window
 X_START, Y_START = -2.25, -0.9
 PIXEL_SIZE_START = 0.003  # the dimensions of each screen pixel in the Argand plane
@@ -13,15 +13,11 @@ NUM_PIXELS_TO_MOVE = 20
 ZOOM_PERCENT = .1
 
 
-def funct(z, c):
-    return z * z + c
-
-
 def iterate(c, count):
     z = 0
     items = [z]
     for i in range(count):
-        z = funct(z, c)
+        z = z * z + c
         items.append(z)
     return items
 
@@ -36,8 +32,6 @@ def is_bound(items):
 def make_point_list(x_pos, y_pos, pixel_size, draw_step):
     point_list = []
     for x_pixel in range(0, X_DIMENSION, draw_step):
-        if x_pixel % 50 == 0:
-            print(x_pixel)
         for y_pixel in range(0, Y_DIMENSION, draw_step):
             real = x_pos + (x_pixel * pixel_size)
             img = y_pos + (y_pixel * pixel_size)
@@ -62,7 +56,7 @@ class MyFractal(arcade.Window):
     def recalc(self):
         with utils.SimpleTimer() as timer:
             self.point_list = make_point_list(self.x_pos, self.y_pos, self.pixel_size, self.draw_step)
-        print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f} elapsed={timer.elapsed:.1f}")
+        print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f} elapsed={timer.elapsed:.2f}")
 
     def on_draw(self):
         self.clear()
@@ -107,6 +101,7 @@ class MyFractal(arcade.Window):
 
 def main():
     app = MyFractal(X_DIMENSION, Y_DIMENSION, "Mandelbrot Set experimentation")
+    app.set_location(250, 20)
     arcade.run()
 
 

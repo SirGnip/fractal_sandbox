@@ -65,6 +65,7 @@ class MyFractal(arcade.Window):
         self.x_pos, self.y_pos = X_START, Y_START
         self.pixel_size = PIXEL_SIZE_START
         self.draw_step = DRAW_STEP_START
+        self.point_size = self.draw_step
 
         self.exe = concurrent.futures.ProcessPoolExecutor(max_workers=MAX_PROC_WORKERS)
         arcade.set_background_color(arcade.color.BLACK)
@@ -78,7 +79,7 @@ class MyFractal(arcade.Window):
 
     def on_draw(self):
         self.clear()
-        arcade.draw_points(self.point_list, arcade.color.WHITE, 1)
+        arcade.draw_points(self.point_list, arcade.color.WHITE, self.point_size)
 
     def on_update(self, delta_time):
         time.sleep(0.001)
@@ -107,7 +108,8 @@ class MyFractal(arcade.Window):
                 self.draw_step = 10
             else:
                 self.draw_step = key - arcade.key.KEY_0
-            print("Changing draw step:", self.draw_step)
+            self.point_size = self.draw_step
+            print("Changing draw step:", self.draw_step, " point size:", self.point_size)
             self.recalc()
         elif key in (arcade.key.Q, arcade.key.ESCAPE):
             print("Quitting")

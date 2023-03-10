@@ -13,22 +13,16 @@ NUM_PIXELS_TO_MOVE = 20
 ZOOM_PERCENT = .1
 
 
-def iterate(c, count):
+def iterate(c, count) -> bool:
+    """Returns true if bound, false if unbound"""
     z = 0
     items = [z]
     for i in range(count):
         z = z * z + c
         items.append(z)
         if abs(z) > ESCAPE_THRESHOLD:
-            break
-    return items
-
-
-def is_bound(items):
-    try:
-        return max([abs(i) for i in items]) < ESCAPE_THRESHOLD
-    except OverflowError:
-        return False
+            return False
+    return True
 
 
 def make_point_list(x_pos, y_pos, pixel_size, draw_step):
@@ -38,8 +32,8 @@ def make_point_list(x_pos, y_pos, pixel_size, draw_step):
             real = x_pos + (x_pixel * pixel_size)
             img = y_pos + (y_pixel * pixel_size)
             c = complex(real, img)
-            s = iterate(c, MAX_ITERATIONS)
-            if is_bound(s):
+            is_bound = iterate(c, MAX_ITERATIONS)
+            if is_bound:
                 point_list.append((x_pixel, y_pixel))
     return point_list
 

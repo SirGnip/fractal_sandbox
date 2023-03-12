@@ -28,17 +28,18 @@ def iterate(z_pow, c,  count) -> bool:
 
 
 def do_work(z_pow, x_pix_start, x_pix_end, x_off, y_off, pix_size, draw_step):
+    """Create point list for range of given screen coordinates (x_pix_start/end, Y_DIMENSION) and Argand offsets (x_off, y_off)"""
     # print('do_work', x_pix)
     with utils.SimpleTimer() as timer:
         point_list = []
         for x_pix in range(x_pix_start, x_pix_end, draw_step):
-            for y_pixel in range(0, Y_DIMENSION, draw_step):
+            for y_pix in range(0, Y_DIMENSION, draw_step):
                 real = x_off + (x_pix * pix_size)
-                img = y_off + (y_pixel * pix_size)
+                img = y_off + (y_pix * pix_size)
                 c = complex(real, img)
                 is_bound = iterate(z_pow, c, MAX_ITERATIONS)
                 if is_bound:
-                    point_list.append((x_pix, y_pixel))
+                    point_list.append((x_pix, y_pix))
     # print("worker", x_pix_start, timer.elapsed)
     return point_list
 

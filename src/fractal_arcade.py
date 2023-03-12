@@ -50,7 +50,7 @@ def make_point_list(executor, z_pow, x_pos, y_pos, pixel_size, draw_step):
     for x_pixel in range(0, X_DIMENSION, chunk_size):
         futures.append(executor.submit(do_work, z_pow, x_pixel, x_pixel + chunk_size, x_pos, y_pos, pixel_size, draw_step))  # non blocking
         chunks += 1
-    print('waiting for results after scheduling chunks:', chunks)
+    # print('waiting for results after scheduling chunks:', chunks)
     results = [fut.result() for fut in futures]  # blocking
 
     points = []
@@ -67,11 +67,12 @@ class MyFractal(arcade.Window):
         self.draw_step = DRAW_STEP_START
         self.point_size = self.draw_step
         self.z_pow = 2
+        self.dragging = False
+        self.do_recalc = True
 
         self.exe = concurrent.futures.ProcessPoolExecutor(max_workers=MAX_PROC_WORKERS)
         arcade.set_background_color(arcade.color.BLACK)
         self.point_list = []
-        self.recalc()
 
     def recalc(self):
         with utils.SimpleTimer() as timer:
@@ -79,24 +80,27 @@ class MyFractal(arcade.Window):
         print(f"{self.x_pos:.6f},{self.y_pos:.6f} pixel_size={self.pixel_size:.6f} elapsed={timer.elapsed:.2f}")
 
     def on_draw(self):
+        # print('draw')
         self.clear()
         arcade.draw_points(self.point_list, arcade.color.WHITE, self.point_size)
 
     def on_update(self, delta_time):
-        time.sleep(0.001)
+        if self.do_recalc:
+            self.recalc()
+            self.do_recalc = False
 
     def on_key_press(self, key, key_modifiers):
         if key == arcade.key.H:
-            self.x_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
-            self.recalc()
-        elif key == arcade.key.L:
             self.x_pos += self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
+        elif key == arcade.key.L:
+            self.x_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
+            self.recalc()
         elif key == arcade.key.J:
-            self.y_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
+            self.y_pos += self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
         elif key == arcade.key.K:
-            self.y_pos += self.pixel_size * NUM_PIXELS_TO_MOVE
+            self.y_pos -= self.pixel_size * NUM_PIXELS_TO_MOVE
             self.recalc()
         elif key == arcade.key.D:
             self.pixel_size *= 1.0 - ZOOM_PERCENT
@@ -122,7 +126,19 @@ class MyFractal(arcade.Window):
             self.close()
 
     def on_mouse_press(self, x, y, button, key_modifiers):
-        print('mouse', x, y, button)
+        self.dragging = True
+
+    def on_mouse_release(self, x, y, button, key_modifiers):
+        self.dragging = False
+
+    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+        if self.dragging:
+            self.x_pos -= self.pixel_size * dx
+            self.y_pos -= self.pixel_size * dy
+            # Doing a recalc() for every on_mouse_motion event can consume a lot of time, causing draw() to get  called infrequently, making the dragging motion very laggy feeling.
+            # So, only do one recalc per update.
+            self.do_recalc = True
+
 
 
 def main():
